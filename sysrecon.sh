@@ -1,6 +1,7 @@
 #!/bin/bash
 #Author: Eli
-#A script for gathering system information
+#A script for scraping system information
+
 clear
 
 echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
@@ -14,6 +15,32 @@ echo "+|_______|  |___|  |_______||___|  |_||_______||_______||_______||_|  |__|
 echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echo ""
 
+# ----------Options---------- #
+
+while [ $# -gt 0 ];
+do
+	case "$1" in
+		-h|--help)
+			echo "Simple system recon bash script that fetches some system info and writes the info to files (or as file names), zips them together, and cleans up."
+			echo "Default: 	Internet connectivity, network adapter info, kernal info, running processes, installed apps, open ports, users, and startup apps."
+			echo ""
+			echo "Options:"
+			echo "-h, --help	Show this menu"
+			echo "-v, --verbose	Add verbosity"
+			exit 0
+			;;
+		-v|--verbose)
+			set -x
+			break
+			;;
+		*)
+			break
+			;;
+	esac
+done			
+
+
+# ----------Body---------- #
 
 #Check for internet access
 echo "--> Checking for internet..."
@@ -99,4 +126,5 @@ echo "--> Zipping up..."
 zip $host.zip *-$host.txt > /dev/null
 
 echo "--> Cleaning up"
-rm *$host.txt 
+rm *$host.txt
+set +x

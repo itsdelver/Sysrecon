@@ -22,7 +22,7 @@ do
 	case "$1" in
 		-h|--help)
 			echo "Simple system recon bash script that fetches some system info and writes the info to files (or as file names), zips them together, and cleans up."
-			echo "Default: 	Internet connectivity, network adapter info, kernal info, running processes, installed apps, open ports, users, and startup apps."
+			echo "Default: 	Internet connectivity, network adapter info, kernal info, running processes, installed apps, open ports, users, and startup apps, writable locations, files with sticky bit (owner and group) set"
 			echo ""
 			echo "Options:"
 			echo "-h, --help	Show this menu"

@@ -2,22 +2,9 @@
 #Author: Eli
 #A script for scraping system information
 
-clear
-
-echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo "+  _______  __   __  _______  ______    _______  _______  _______  __    _  +"
-echo "+ |       ||  | |  ||       ||    _ |  |       ||       ||       ||  |  | | +"
-echo "+ |  _____||  |_|  ||  _____||   | ||  |    ___||       ||   _   ||   |_| | +"
-echo "+ | |_____ |       || |_____ |   |_||_ |   |___ |       ||  | |  ||       | +"
-echo "+ |_____  ||_     _||_____  ||    __  ||    ___||      _||  |_|  ||  _    | +"
-echo "+  _____| |  |   |   _____| ||   |  | ||   |___ |     |_ |       || | |   | +"
-echo "+ |_______|  |___|  |_______||___|  |_||_______||_______||_______||_|  |__| +"
-echo "+                                                                           +"
-echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo ""
-
 # ----------Options---------- #
 
+declare optionSet;
 while [ $# -gt 0 ];
 do
 	case "$1" in
@@ -35,13 +22,31 @@ do
 			break
 			;;
 		*)
-			break
+			echo "Error with options"
+			exit 0
 			;;
 	esac
 done			
 
 
-# ----------Body---------- #
+# ----------Functions---------- #
+
+printBanner(){
+	clear
+	
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "+  _______  __   __  _______  ______    _______  _______  _______  __    _  +"
+	echo "+ |       ||  | |  ||       ||    _ |  |       ||       ||       ||  |  | | +"
+	echo "+ |  _____||  |_|  ||  _____||   | ||  |    ___||       ||   _   ||   |_| | +"
+	echo "+ | |_____ |       || |_____ |   |_||_ |   |___ |       ||  | |  ||       | +"
+	echo "+ |_____  ||_     _||_____  ||    __  ||    ___||      _||  |_|  ||  _    | +"
+	echo "+  _____| |  |   |   _____| ||   |  | ||   |___ |     |_ |       || | |   | +"
+	echo "+ |_______|  |___|  |_______||___|  |_||_______||_______||_______||_|  |__| +"
+	echo "+                                                                           +"
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo ""
+}
+
 
 #Get hostname
 getHostname(){
@@ -60,9 +65,9 @@ checkInternet(){
 
 	if [ "$internet" != 0 ]
 	then
-		echo "internet-failed"
+		echo "internet-failed.txt"
 	else 
-		echo "internet-confirmed"
+		echo "internet-confirmed.txt"
 	fi
 }
 
@@ -84,7 +89,7 @@ getRoutes(){
 #Get system information
 getSysInfo(){
 	echo "--> Getting system info..."
-	echo "$(uname -v)"
+	echo "$(uname -a)"
 }
 
 
@@ -157,10 +162,25 @@ findStickyOwner(){
 }
 
 
-#Write and zip
-echo "--> Writing files..."
-mkdir /tmp/sysrecon
+#Clean up
+end(){
+	mkdir /tmp/sysrecon
 
+	echo "--> Zipping files..."
+	zip -j $host.zip /tmp/sysrecon/* > /dev/null
+
+	echo "--> Cleaning up..."
+	rm -r /tmp/sysrecon
+	set +x
+	
+	echo "--> Exiting"
+	exit 0
+}
+
+
+# ----------Default---------- #
+
+printBanner
 getHostname
 checkInternet
 getNetInfo
@@ -174,23 +194,4 @@ getStartup
 writableFiles
 findStickyGroup
 findStickyOwner
-
-#touch "/tmp/sysrecon/$internet-$host".txt
-#echo "$netinfo" > /tmp/sysrecon/netinfo-$host.txt
-#echo "$route" > /tmp/sysrecon/route-$host.txt
-#touch "/tmp/sysrecon/$kernal-$host".txt
-#echo "$processes" > /tmp/sysrecon/proc-$host.txt
-#echo "$apps" > /tmp/sysrecon/apps-$host.txt
-#echo "$ports" > /tmp/sysrecon/ports-$host.txt
-#echo "$users" > /tmp/sysrecon/users-$host.txt
-#echo "$startup" > /tmp/sysrecon/startup-$host.txt
-#echo "$writable" > /tmp/sysrecon/writable-$host.txt
-#echo "$gbit" > /tmp/sysrecon/gbit-$host.txt
-#echo "$obit" > /tmp/sysrecon/obit-$host.txt
-
-echo "--> Zipping up..."
-zip -j $host.zip /tmp/sysrecon/* > /dev/null
-
-echo "--> Cleaning up..."
-rm -r /tmp/sysrecon
-set +x
+end

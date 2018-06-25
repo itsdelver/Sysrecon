@@ -11,6 +11,7 @@ Fetches:
 * Open ports
 * Users
 * Startup apps
+* Routes
 * Writable locations
 * Files with group sticky bit
 * Files with owner sticky bit

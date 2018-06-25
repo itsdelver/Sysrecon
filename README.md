@@ -11,5 +11,8 @@ Fetches:
 * Open ports
 * Users
 * Startup apps
+* Writable locations
+* Files with group sticky bit
+* Files with owner sticky bit
 
 Writes the info to files (or as file names), zips them together, and cleans up. 

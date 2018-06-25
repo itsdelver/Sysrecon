@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #Author: Eli
 #A script for scraping system information
 
@@ -63,7 +63,12 @@ host=$(hostname)
 
 #Get network adapter information
 echo "--> Getting net adapter info..."
-netinfo=$(ifconfig)
+netinfo=$(ip addr)
+
+
+#Get routing table
+echo "--> Getting routing table..."
+route=$(ip route)
 
 
 #Get system information
@@ -73,14 +78,14 @@ kernal=$(uname -v)
 
 #Get process info 
 echo "--> Getting process info..."
-processes=$(ps -aux)
+processes=$(systemctl | grep running)
 
 
-#Get installed aps
+#Get installed apps
 echo "--> Getting program list..."
 declare -A os;
 
-os[/etc/redhat-release]="yum list installed" 
+os[/etc/redhat-release]="dnf list installed" 
 os[/etc/arch-release]="pacman -Q" 
 os[/etc/SuSE-release]="zypper search --installed-only"
 os[/etc/debian_version]="dpkg -l"
@@ -97,7 +102,7 @@ done
 
 #Get listening internet ports
 echo "--> Getting listening ports..."
-ports=$(netstat -at)
+ports=$(ss -lutn)
 
 
 #Get users
@@ -107,24 +112,44 @@ users=$(cat /etc/passwd)
 
 #Get startup apps
 echo "--> Getting starup apps..."
-startup=$(ls /etc/init.d)
+startup=$(systemctl list-unit-files --state=enabled)
+
+
+#Writable files
+echo "--> Finding writable locations..."
+writable=$(find / -perm -222 -type d 2>/dev/null)
+
+
+#Group sticky bit
+echo "--> Finding files with group sticky bit..." 
+gbit=$(find / -perm -g=s -type f 2>/dev/null)
+
+
+#Owner sticky bit
+echo "--> Finding files with owner sticky bit..."
+obit=$(find / -perm -u=s -type f 2>/dev/null)
 
 
 #Write and zip
 echo "--> Writing files..."
+mkdir /tmp/sysrecon
 
-touch "$internet-$host".txt
-echo "$netinfo" > netinfo-$host.txt
-touch "$kernal-$host".txt
-echo "$processes" > proc-$host.txt
-echo "$apps" > apps-$host.txt
-echo "$ports" > ports-$host.txt
-echo "$users" > users-$host.txt
-echo "$startup" > startup-$host.txt
+touch "/tmp/sysrecon/$internet-$host".txt
+echo "$netinfo" > /tmp/sysrecon/netinfo-$host.txt
+echo "$route" > /tmp/sysrecon/route-$host.txt
+touch "/tmp/sysrecon/$kernal-$host".txt
+echo "$processes" > /tmp/sysrecon/proc-$host.txt
+echo "$apps" > /tmp/sysrecon/apps-$host.txt
+echo "$ports" > /tmp/sysrecon/ports-$host.txt
+echo "$users" > /tmp/sysrecon/users-$host.txt
+echo "$startup" > /tmp/sysrecon/startup-$host.txt
+echo "$writable" > /tmp/sysrecon/writable-$host.txt
+echo "$gbit" > /tmp/sysrecon/gbit-$host.txt
+echo "$obit" > /tmp/sysrecon/obit-$host.txt
 
 echo "--> Zipping up..."
-zip $host.zip *-$host.txt > /dev/null
+zip -j $host.zip /tmp/sysrecon/* > /dev/null
 
 echo "--> Cleaning up"
-rm *$host.txt
+rm -r /tmp/sysrecon
 set +x

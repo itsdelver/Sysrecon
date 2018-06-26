@@ -44,20 +44,49 @@ do
 			for curOpt in ${opts:10} 
 			do
 				case $curOpt in
-					t) 
-						echo "THIS WAS THE T"
+					internet) 
+						optionSet[internet]=checkInternet
 						;;				
-					e)
-						echo "THERE WAS AN E"
+					netadapter)
+						optionSet[netadapter]=getNetInfo
 						;;
-					s)
-						echo "FOUND AN S"
+					route)
+						optionSet[route]=getRoutes
 						;;
+					sysinfo)
+						optionSet[sysinfo]=getSysInfo
+						;;
+					proc)
+						optionSet[proc]=getProcInfo
+						;;
+					installedapp)
+						optionSet[installedapp]=getInstalledApps
+						;;
+					port)
+						optionSet[port]=getListeningPorts
+						;;
+					user) 
+						optionSet[user]=getUsers
+						;;
+					startupapp)
+						optionSet[startupapp]=getStartup
+						;;
+					writable)
+						optionSet[writable]=writableFiles
+						;;
+					stickygroup)
+						optionSet[stickygroup]=findStickyGroup
+						;;
+					stickyowner)
+						optionset[stickyowner]=findStickyOwner
+						;;
+					*)
+						echo "Error in --options"
 				esac
 			done 
 			;;
 		*)
-			echo "Error with options"
+			echo "Error with flags"
 			exit 0
 			;;
 	esac
@@ -70,6 +99,7 @@ done
 getHostname(){
 	echo "--> Getting hostname..."
 	echo "$(hostname)"
+	echo ""
 }
 
 
@@ -87,6 +117,7 @@ checkInternet(){
 	else 
 		echo "internet-confirmed.txt"
 	fi
+	echo ""
 }
 
 
@@ -94,6 +125,7 @@ checkInternet(){
 getNetInfo(){
 	echo "--> Getting net adapter info..."
 	echo "$(ip addr)"
+	echo ""		
 }
 
 
@@ -101,6 +133,7 @@ getNetInfo(){
 getRoutes(){
 	echo "--> Getting routing table..."
 	echo "$(ip route)"
+	echo ""
 }
 
 
@@ -108,6 +141,7 @@ getRoutes(){
 getSysInfo(){
 	echo "--> Getting system info..."
 	echo "$(uname -a)"
+	echo ""
 }
 
 
@@ -115,6 +149,7 @@ getSysInfo(){
 getProcInfo(){ 
 	echo "--> Getting process info..."
 	echo "$(systemctl | grep running)"
+	echo ""
 }
 
 
@@ -135,6 +170,7 @@ getInstalledApps(){
 			 echo "$(${os[$pac]})"
 		fi
 	done
+	echo ""
 }
 
 
@@ -142,6 +178,7 @@ getInstalledApps(){
 getListeningPorts(){
 	echo "--> Getting listening ports..."
 	echo "$(ss -lutn)"
+	echo ""
 }
 
 
@@ -149,6 +186,7 @@ getListeningPorts(){
 getUsers(){
 	echo "--> Getting users..."
 	echo "$(cat /etc/passwd)"
+	echo ""
 }
 
 
@@ -156,6 +194,7 @@ getUsers(){
 getStartup(){
 	echo "--> Getting starup apps..."
 	echo "$(systemctl list-unit-files --state=enabled)"
+	echo ""
 }
 
 
@@ -163,6 +202,7 @@ getStartup(){
 writableFiles(){
 	echo "--> Finding writable locations..."
 	echo "$(find / -perm -222 -type d 2>/dev/null)"
+	echo ""
 }
 
 
@@ -170,6 +210,7 @@ writableFiles(){
 findStickyGroup(){
 	echo "--> Finding files with group sticky bit..." 
 	echo "$(find / -perm -g=s -type f 2>/dev/null)"
+	echo ""
 }
 
 
@@ -177,6 +218,7 @@ findStickyGroup(){
 findStickyOwner(){
 	echo "--> Finding files with owner sticky bit..."
 	echo "$(find / -perm -u=s -type f 2>/dev/null)"
+	echo ""
 }
 
 
@@ -199,23 +241,25 @@ end(){
 # ----------Command Building---------- #
 if [ ${#optionSet[@]} -eq 0 ] 
 then
+	getHostname
+ 	checkInternet
+	getNetInfo
+	getRoutes
+	getSysInfo
+	getProcInfo
+	getInstalledApps
+	getListeningPorts
+	getUsers
+	getStartup
+	writableFiles
+	findStickyGroup
+	findStickyOwner
 	end
 else	
+	for ops in ${!optionSet[@]}
+	do
+		
+		${optionSet[$ops]}
+	done
 	end
 fi
-
-#printBanner
-#getHostname
-#checkInternet
-#getNetInfo
-#getRoutes
-#getSysInfo
-#getProcInfo
-#getInstalledApps
-#getListeningPorts
-#getUsers
-#getStartup
-#writableFiles
-#findStickyGroup
-#findStickyOwner
-#end

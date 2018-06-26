@@ -2,43 +2,6 @@
 #Author: Eli
 #A script for scraping system information
 
-# ----------Options---------- #
-
-declare -A optionSet;
-while [ $# -gt 0 ];
-do
-	case "$1" in
-		-h|--help)
-			echo "Simple system recon bash script that fetches some system info and writes the info to files (or as file names), zips them together, and cleans up."
-			echo "Default: 	Internet connectivity, network adapter info, kernal info, running processes, installed apps, open ports, users, and startup apps, routes, writable locations, files with sticky bit (owner and group) set"
-			echo ""
-			echo "Options:"
-			echo "-h, --help	Show this menu"
-			echo "-v, --verbose	Add verbosity"
-			exit 0
-			;;
-		-v|--verbose)
-			set -x
-			break
-			;;
-		--options=*)
-			IFS=','
-			
-			for curOpt in ${1:10} 
-			do
-				echo "$curOpt"
-			done <<< "$1"
-			break
-			;;
-		*)
-			echo "Error with options"
-			exit 0
-			;;
-	esac
-done			
-
-
-# ----------Functions---------- #
 
 printBanner(){
 	clear
@@ -56,6 +19,52 @@ printBanner(){
 	echo ""
 }
 
+
+# ----------Options---------- #
+
+printBanner
+declare -A optionSet;
+for opts in $@
+do
+	case "$opts" in
+		-h|--help)
+			echo "Simple system recon bash script that fetches some system info and writes the info to files (or as file names), zips them together, and cleans up."
+			echo "Default: 	Internet connectivity, network adapter info, kernal info, running processes, installed apps, open ports, users, and startup apps, routes, writable locations, files with sticky bit (owner and group) set"
+			echo ""
+			echo "Options:"
+			echo "-h, --help	Show this menu"
+			echo "-v, --verbose	Add verbosity"
+			exit 0
+			;;
+		-v|--verbose)
+			set -x
+			;;
+		--options=*)
+			IFS=','	
+			for curOpt in ${opts:10} 
+			do
+				case $curOpt in
+					t) 
+						echo "THIS WAS THE T"
+						;;				
+					e)
+						echo "THERE WAS AN E"
+						;;
+					s)
+						echo "FOUND AN S"
+						;;
+				esac
+			done 
+			;;
+		*)
+			echo "Error with options"
+			exit 0
+			;;
+	esac
+done			
+
+
+# ----------Functions---------- #
 
 #Get hostname
 getHostname(){
@@ -190,12 +199,8 @@ end(){
 # ----------Command Building---------- #
 if [ ${#optionSet[@]} -eq 0 ] 
 then
-	printBanner
-
 	end
-else
-	printBanner
-	
+else	
 	end
 fi
 

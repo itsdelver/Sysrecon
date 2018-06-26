@@ -28,12 +28,25 @@ for opts in $@
 do
 	case "$opts" in
 		-h|--help)
-			echo "Simple system recon bash script that fetches some system info and writes the info to files (or as file names), zips them together, and cleans up."
-			echo "Default: 	Internet connectivity, network adapter info, kernal info, running processes, installed apps, open ports, users, and startup apps, routes, writable locations, files with sticky bit (owner and group) set"
+			echo "Simple bash recon script to fetch various system information"
+			echo "With no arguments this script will run all options and print to stdin. "
 			echo ""
 			echo "Options:"
 			echo "-h, --help	Show this menu"
 			echo "-v, --verbose	Add verbosity"
+			echo "--options=	Specify what information to gather, comma seperated list no spaces (--options=this,is,an,example)"
+			echo "    internet"
+			echo "    netadapter"
+			echo "    route"
+			echo "    sysinfo"
+			echo "    proc"
+			echo "    installedapp"
+			echo "    port"
+			echo "    user"
+			echo "    startupapp"
+			echo "    writable"
+			echo "    stickygroup"
+			echo "    stickyowner"
 			exit 0
 			;;
 		-v|--verbose)
@@ -239,26 +252,32 @@ end(){
 
 
 # ----------Command Building---------- #
+
 if [ ${#optionSet[@]} -eq 0 ] 
 then
-	getHostname
- 	checkInternet
-	getNetInfo
-	getRoutes
-	getSysInfo
-	getProcInfo
-	getInstalledApps
-	getListeningPorts
-	getUsers
-	getStartup
-	writableFiles
-	findStickyGroup
-	findStickyOwner
-	end
+		output+=$(getHostname)
+	 	output+=$(checkInternet)
+		output+=$(getNetInfo)
+		output+=$(getRoutes)
+		output+=$(getSysInfo)
+		output+=$(getProcInfo)
+		output+=$(getInstalledApps)
+		output+=$(getListeningPorts)
+		output+=$(getUsers)
+		output+=$(getStartup)
+		output+=$(writableFiles)
+		output+=$(findStickyGroup)
+		output+=$(findStickyOwner)
+		#echo "${output[@]}"
+		end
+
+	for ops in ${output[@]}
+	do
+		echo $ops
+	done
 else	
 	for ops in ${!optionSet[@]}
 	do
-		
 		${optionSet[$ops]}
 	done
 	end

@@ -4,7 +4,7 @@
 
 # ----------Options---------- #
 
-declare optionSet;
+declare -A optionSet;
 while [ $# -gt 0 ];
 do
 	case "$1" in
@@ -19,6 +19,15 @@ do
 			;;
 		-v|--verbose)
 			set -x
+			break
+			;;
+		--options=*)
+			IFS=','
+			
+			for curOpt in ${1:10} 
+			do
+				echo "$curOpt"
+			done <<< "$1"
 			break
 			;;
 		*)
@@ -178,20 +187,30 @@ end(){
 }
 
 
-# ----------Default---------- #
+# ----------Command Building---------- #
+if [ ${#optionSet[@]} -eq 0 ] 
+then
+	printBanner
 
-printBanner
-getHostname
-checkInternet
-getNetInfo
-getRoutes
-getSysInfo
-getProcInfo
-getInstalledApps
-getListeningPorts
-getUsers
-getStartup
-writableFiles
-findStickyGroup
-findStickyOwner
-end
+	end
+else
+	printBanner
+	
+	end
+fi
+
+#printBanner
+#getHostname
+#checkInternet
+#getNetInfo
+#getRoutes
+#getSysInfo
+#getProcInfo
+#getInstalledApps
+#getListeningPorts
+#getUsers
+#getStartup
+#writableFiles
+#findStickyGroup
+#findStickyOwner
+#end

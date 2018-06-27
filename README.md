@@ -17,4 +17,4 @@ Fetches:
 * Files with owner sticky bit
 
 Writes output to STDIN, or if the `-l` flag is used to files named after the information contained.
-See the -h menu for more 
+See the `-h` menu for more 

@@ -16,4 +16,5 @@ Fetches:
 * Files with group sticky bit
 * Files with owner sticky bit
 
-Writes the info to files (or as file names), zips them together, and cleans up. 
+Writes output to STDIN, or if the `-l` flag is used to files named after the information contained.
+See the -h menu for more 

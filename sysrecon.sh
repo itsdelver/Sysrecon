@@ -6,7 +6,6 @@
 # ----------Options---------- #
 
 logging=0
-verbose=0
 declare -A optionSet;
 
 for opts in $@
@@ -18,7 +17,6 @@ do
 			echo ""
 			echo "Options:"
 			echo "-h, --help	Show this menu"
-			echo "-v, --verbose	Add verbosity"
 			echo "-l, --log 	Switches to file output"
 			echo "--options=	Specify what information to gather, comma seperated list no spaces (--options=this,is,an,example)"
 			echo "    internet"
@@ -34,9 +32,6 @@ do
 			echo "    stickygroup"
 			echo "    stickyowner"
 			exit 0
-			;;
-		-v|--verbose)
-			verbose=1
 			;;
 		-l|--logging)
 			logging=1
@@ -316,4 +311,3 @@ else
 		done
 	fi
 fi
-

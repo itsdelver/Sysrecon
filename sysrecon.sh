@@ -22,7 +22,7 @@ do
 	case "$1" in
 		-h|--help)
 			echo "Simple system recon bash script that fetches some system info and writes the info to files (or as file names), zips them together, and cleans up."
-			echo "Default: 	Internet connectivity, network adapter info, kernal info, running processes, installed apps, open ports, users, and startup apps, writable locations, files with sticky bit (owner and group) set"
+			echo "Default: 	Internet connectivity, network adapter info, kernal info, running processes, installed apps, open ports, users, and startup apps, writable locations, files with sticky bit (owner and group) set, mount information"
 			echo ""
 			echo "Options:"
 			echo "-h, --help	Show this menu"
@@ -42,7 +42,7 @@ done
 
 # ----------Body---------- #
 
-#Check for internet access
+#Internet access
 echo "--> Checking for internet..."
 
 ping -c1 8.8.8.8 > /dev/null
@@ -56,32 +56,32 @@ else
 fi
 
 
-#Get hostname
+#Hostname
 echo "--> Getting hostname..."
 host=$(hostname)
 
 
-#Get network adapter information
+#Network adapter information
 echo "--> Getting net adapter info..."
 netinfo=$(ip addr)
 
 
-#Get routing table
+#Routing table
 echo "--> Getting routing table..."
 route=$(ip route)
 
 
-#Get system information
+#System information
 echo "--> Getting system info..."
 kernal=$(uname -v) 
 
 
-#Get process info 
+#Process info 
 echo "--> Getting process info..."
 processes=$(systemctl | grep running)
 
 
-#Get installed apps
+#Installed apps
 echo "--> Getting program list..."
 declare -A os;
 
@@ -100,17 +100,17 @@ do
 done
 
 
-#Get listening internet ports
+#Listening internet ports
 echo "--> Getting listening ports..."
 ports=$(ss -lutn)
 
 
-#Get users
+#Users
 echo "--> Getting users..."
 users=$(cat /etc/passwd)
 
 
-#Get startup apps
+#Startup apps
 echo "--> Getting starup apps..."
 startup=$(systemctl list-unit-files --state=enabled)
 
@@ -130,6 +130,11 @@ echo "--> Finding files with owner sticky bit..."
 obit=$(find / -perm -u=s -type f 2>/dev/null)
 
 
+#Mount information
+echo "--> Getting mount information..."
+mouted=$(mount)
+
+
 #Write and zip
 echo "--> Writing files..."
 mkdir /tmp/sysrecon
@@ -146,6 +151,7 @@ echo "$startup" > /tmp/sysrecon/startup-$host.txt
 echo "$writable" > /tmp/sysrecon/writable-$host.txt
 echo "$gbit" > /tmp/sysrecon/gbit-$host.txt
 echo "$obit" > /tmp/sysrecon/obit-$host.txt
+echo "$mounted" > /tmp/sysrecon/mounted-$host.txt
 
 echo "--> Zipping up..."
 zip -j $host.zip /tmp/sysrecon/* > /dev/null

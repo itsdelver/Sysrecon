@@ -28,9 +28,10 @@ do
 			echo "    port"
 			echo "    user"
 			echo "    startupapp"
-			echo "    writable"
+			echo "    writable"anHiPifbiWyghotAcHoimEec@
 			echo "    stickygroup"
 			echo "    stickyowner"
+			echo "    mounted"
 			exit 0
 			;;
 		-l|--logging)
@@ -75,7 +76,10 @@ do
 						optionSet[stickygroup]=findStickyGroup
 						;;
 					stickyowner)
-						optionset[stickyowner]=findStickyOwner
+						optionSet[stickyowner]=findStickyOwner
+						;;
+					mounted)
+						optionSet[mounted]=getMounted
 						;;
 					*)
 						echo "Error in --options"
@@ -92,7 +96,7 @@ done
 
 # ----------Functions---------- #
 
-#Prints the main banner
+#Print the main banner
 printBanner(){
 	clear
 	
@@ -110,7 +114,7 @@ printBanner(){
 }
 
 
-#Turns on file output if flag present
+#Turn on file output if flag present
 enableLogging(){
 	exec 1<&- #Close STDOUT file descriptor
 	exec 2<&- #Close STDERR file desriptor
@@ -118,7 +122,7 @@ enableLogging(){
 }
 
 
-#Get hostname
+#Hostname
 getHostname(){
 	echo ""
 	echo "--> Getting hostname..."
@@ -127,7 +131,7 @@ getHostname(){
 
 
 
-#Check for internet access
+#Internet access
 checkInternet(){
 	echo ""
 	echo "--> Checking for internet..."
@@ -144,7 +148,7 @@ checkInternet(){
 }
 
 
-#Get network adapter information
+#Network adapter information
 getNetInfo(){
 	echo ""
 	echo "--> Getting net adapter info..."
@@ -152,7 +156,7 @@ getNetInfo(){
 }
 
 
-#Get routing table
+#Routing table
 getRoutes(){
 	echo ""
 	echo "--> Getting routing table..."
@@ -160,7 +164,7 @@ getRoutes(){
 }
 
 
-#Get system information
+#System information
 getSysInfo(){
 	echo ""
 	echo "--> Getting system info..."
@@ -176,7 +180,7 @@ getProcInfo(){
 }
 
 
-#Get installed apps
+#Installed apps
 getInstalledApps(){
 	echo ""
 	echo "--> Getting program list..."
@@ -205,7 +209,7 @@ getListeningPorts(){
 }
 
 
-#Get users
+#Users
 getUsers(){
 	echo ""
 	echo "--> Getting users..."
@@ -213,7 +217,7 @@ getUsers(){
 }
 
 
-#Get startup apps
+#Startup apps
 getStartup(){
 	echo ""
 	echo "--> Getting starup apps..."
@@ -245,20 +249,12 @@ findStickyOwner(){
 }
 
 
-#Clean up
-end(){
-	mkdir /tmp/sysrecon
-
-	echo "--> Zipping files..."
-	zip -j $host.zip /tmp/sysrecon/* > /dev/null
-
-	echo "--> Cleaning up..."
-	rm -r /tmp/sysrecon
-	set +x
-	
-	echo "--> Exiting"
-	exit 0
-}
+#Mount information
+getMounted(){
+	echo ""
+	echo "--> Getting mount information"
+	echo "$(mount)"
+} 
 
 
 # ----------Command Building---------- #
@@ -278,6 +274,7 @@ then
 	output+=(writableFiles)
 	output+=(findStickyGroup)
 	output+=(findStickyOwner)
+	output+=(getMounted)
 	
 	if [ $logging -eq 1 ]
 	then

@@ -135,16 +135,7 @@ getHostname(){
 checkInternet(){
 	echo ""
 	echo "--> Checking for internet..."
-
-	ping -c1 8.8.8.8 > /dev/null
-	internet=$?
-
-	if [ "$internet" != 0 ]
-	then
-		echo "internet-failed"
-	else 
-		echo "internet-confirmed"
-	fi
+	ping -c1 -w3 8.8.8.8 && echo "Online" || echo "Offline"
 }
 
 

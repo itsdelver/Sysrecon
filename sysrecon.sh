@@ -45,15 +45,15 @@ done
 #Internet access
 echo "--> Checking for internet..."
 
-ping -c1 8.8.8.8 > /dev/null
-internet=$?
+ping -c1 -w5 8.8.8.8 && internet="Online" || internet="Offline"
+#internet=$?
 
-if [ "$internet" != 0 ]
-then
-	internet="internet-failed"
-else 
-	internet="internet-confirmed"
-fi
+#if [ "$internet" != 0 ]
+#then
+#	internet="internet-failed"
+#else 
+#	internet="internet-confirmed"
+#fi
 
 
 #Hostname
